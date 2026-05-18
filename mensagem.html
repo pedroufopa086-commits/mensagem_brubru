@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Minha Pituca</title>
+    <style>
+        /* Configurações Gerais e Centralização */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #ffe5ec 0%, #ffffff 100%);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Estilização do Coração Central (Via pseudo-elementos) */
+        .heart-btn {
+            position: absolute;
+            width: 100px;
+            height: 90px;
+            cursor: pointer;
+            background-color: #ff4d6d;
+            display: inline-block;
+            transform: rotate(-45deg);
+            animation: pulse 1.2s infinite ease-in-out;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            border: none;
+            outline: none;
+            z-index: 10;
+        }
+
+        .heart-btn:before,
+        .heart-btn:after {
+            content: "";
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-color: #ff4d6d;
+            border-radius: 50%;
+        }
+
+        .heart-btn:before {
+            top: -50px;
+            left: 0;
+        }
+
+        .heart-btn:after {
+            top: 0;
+            left: 50px;
+        }
+
+        /* Animação de Pulsação (Batimento) */
+        @keyframes pulse {
+            0% { transform: scale(1) rotate(-45deg); }
+            20% { transform: scale(1.15) rotate(-45deg); }
+            40% { transform: scale(1.05) rotate(-45deg); }
+            60% { transform: scale(1.2) rotate(-45deg); }
+            100% { transform: scale(1) rotate(-45deg); }
+        }
+
+        /* Classe para sumir com o coração após o clique */
+        .heart-btn.fade-out {
+            opacity: 0;
+            transform: scale(0) rotate(-45deg);
+            pointer-events: none;
+        }
+
+        /* Mensagem Oculta por padrão */
+        .message {
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 1.5s ease-out, transform 1.5s ease-out;
+            color: #ff4d6d;
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            padding: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.05);
+            z-index: 5;
+            max-width: 90%;
+            pointer-events: none;
+        }
+
+        /* Ativador do Fade-in da Mensagem */
+        .message.fade-in {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Partículas da Chuva de Corações */
+        .particle {
+            position: absolute;
+            background-color: #ff758f;
+            display: inline-block;
+            transform: rotate(-45deg);
+            pointer-events: none;
+            opacity: 0.8;
+            animation: floatUp 3s forwards ease-in;
+        }
+
+        .particle:before,
+        .particle:after {
+            content: "";
+            position: absolute;
+            background-color: #ff758f;
+            border-radius: 50%;
+        }
+
+        /* Animação que faz os corações subirem e sumirem */
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) rotate(-45deg) scale(0.5);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-10vh) rotate(-45deg) scale(1.2);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <button class="heart-btn" id="heartBtn" aria-label="Clique aqui"></button>
+        
+        <h1 class="message" id="loveMessage">TE AMO, PITUCA! ESTOU COM SAUDADES</h1>
+    </div>
+
+    <script>
+        const heartBtn = document.getElementById('heartBtn');
+        const loveMessage = document.getElementById('loveMessage');
+
+        heartBtn.addEventListener('click', () => {
+            // 1. Esconde o coração principal com efeito suave
+            heartBtn.classList.add('fade-out');
+
+            // 2. Dispara a chuva de corações (partículas)
+            createHeartShower();
+
+            // 3. Exibe a mensagem romântica após um leve delay (500ms)
+            setTimeout(() => {
+                loveMessage.classList.add('fade-in');
+            }, 500);
+        });
+
+        function createHeartShower() {
+            const container = document.querySelector('.container');
+            const totalParticles = 40; // Quantidade de coraçõezinhos
+
+            for (let i = 0; i < totalParticles; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+
+                // Define tamanhos aleatórios para os corações secundários
+                const size = Math.floor(Math.random() * 15) + 10; // entre 10px e 25px
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+
+                // Ajusta os pseudo-elementos dinamicamente com base no tamanho gerado
+                const style = document.createElement('style');
+                style.innerHTML = `
+                    .particle:before, .particle:after { 
+                        width: ${size}px; 
+                        height: ${size}px; 
+                    }
+                    .particle:before { top: -${size/2}px; left: 0; }
+                    .particle:after { top: 0; left: ${size/2}px; }
+                `;
+                document.head.appendChild(style);
+
+                // Distribui as posições horizontais aleatoriamente na tela
+                particle.style.left = `${Math.random() * 100}%`;
+                
+                // Cria atrasos (delays) diferentes para dar um efeito natural de fluxo
+                particle.style.animationDelay = `${Math.random() * 1.5}s`;
+                
+                // Varia levemente a opacidade inicial e cores para dar profundidade
+                const colors = ['#ff4d6d', '#ff758f', '#ff8fa3', '#ffb3c1'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.backgroundColor = randomColor;
+
+                // Adiciona ao container
+                container.appendChild(particle);
+
+                // Remove o elemento do DOM após o término da animação para não pesar a página
+                particle.addEventListener('animationend', () => {
+                    particle.remove();
+                });
+            }
+        }
+    </script>
+</body>
+</html>
